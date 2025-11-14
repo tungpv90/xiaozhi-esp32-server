@@ -1,5 +1,5 @@
 # 第一阶段：构建Vue前端
-FROM node:18 as web-builder
+FROM node:18 AS web-builder
 WORKDIR /app
 COPY main/manager-web/package*.json ./
 RUN npm install
@@ -7,7 +7,7 @@ COPY main/manager-web .
 RUN npm run build
 
 # 第二阶段：构建Java后端
-FROM maven:3.9.4-eclipse-temurin-21 as api-builder
+FROM maven:3.9.4-eclipse-temurin-21 AS api-builder
 WORKDIR /app
 COPY main/manager-api/pom.xml .
 COPY main/manager-api/src ./src
@@ -16,7 +16,8 @@ RUN mvn clean package -Dmaven.test.skip=true
 # 第三阶段：构建最终镜像
 FROM bellsoft/liberica-runtime-container:jre-21-glibc
 
-# 安装Nginx和字体库
+# ⚠️ ảnh này bạn đang dùng apk, nên mình giữ nguyên cách của bạn
+# cài nginx + tools
 RUN apk update && \
     apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         nginx \
@@ -24,6 +25,7 @@ RUN apk update && \
         fontconfig \
         ttf-dejavu \
         msttcorefonts-installer \
+        dos2unix \
     && ACCEPT_EULA=Y apk add --no-cache msttcorefonts-installer \
     && fc-cache -f -v \
     && rm -rf /var/cache/apk/*
@@ -40,10 +42,12 @@ COPY --from=web-builder /app/dist /usr/share/nginx/html
 # 复制Java后端JAR包
 COPY --from=api-builder /app/target/xiaozhi-esp32-api.jar /app/xiaozhi-esp32-api.jar
 
-# 暴露端口
+# 启动脚本（从Windows过来的可能是CRLF）
+COPY docs/docker/start.sh /start.sh
+
+# 🔑 chuyển CRLF -> LF và cấp quyền thực thi
+RUN dos2unix /start.sh && chmod +x /start.sh
+
 EXPOSE 8002
 
-# 启动脚本
-COPY docs/docker/start.sh /start.sh
-RUN chmod +x /start.sh
 CMD ["/start.sh"]
