@@ -1,0 +1,19 @@
+# Development Dockerfile cho Vue Web
+FROM node:18
+
+WORKDIR /app
+
+# Copy package files
+COPY main/manager-web/package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code (sẽ được mount trong dev mode)
+COPY main/manager-web .
+
+# Expose port cho dev server
+EXPOSE 8001
+
+# Chạy Vue dev server với hot-reload
+CMD ["npm", "run", "serve"]

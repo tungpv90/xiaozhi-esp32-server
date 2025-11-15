@@ -1,0 +1,19 @@
+# Development Dockerfile cho Spring Boot API
+FROM maven:3.9.4-eclipse-temurin-21
+
+WORKDIR /app
+
+# Copy pom.xml trước để cache dependencies
+COPY main/manager-api/pom.xml .
+
+# Install dependencies (sẽ được cache nếu pom.xml không đổi)
+RUN mvn dependency:go-offline -B || true
+
+# Copy source code (sẽ được mount trong dev mode)
+COPY main/manager-api/src ./src
+
+# Expose port
+EXPOSE 8003
+
+# Chạy Spring Boot với devtools
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dserver.port=8003 -Dserver.servlet.context-path=/xiaozhi"]

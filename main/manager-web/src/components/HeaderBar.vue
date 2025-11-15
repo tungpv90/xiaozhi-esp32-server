@@ -729,7 +729,7 @@ export default {
 }
 
 .brand-img {
-  height: 20px;
+  height: 40px;
 }
 
 .header-center {

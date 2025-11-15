@@ -38,14 +38,39 @@ const cdnResources = {
 // 判断是否使用CDN
 const useCDN = process.env.VUE_APP_USE_CDN === 'true';
 
+const isDocker = process.env.DOCKER_ENV === 'true';
 module.exports = defineConfig({
   productionSourceMap: process.env.NODE_ENV !=='production', // 生产环境不生成 source map
+
+  /* for production environment
   devServer: {
     port: 8001, // 指定端口为 8001
     proxy: {
       '/xiaozhi': {
         target: 'http://127.0.0.1:8002',
         changeOrigin: true
+      }
+    },
+    client: {
+      overlay: false, // 不显示 webpack 错误覆盖层
+    },
+  },
+
+  */
+ 
+  devServer: {
+    port: 8001, // 指定端口为 8001
+    host: '0.0.0.0', // Cho phép truy cập từ bên ngoài container (Docker)
+    proxy: {
+      '/xiaozhi': {
+        // Sử dụng environment variable hoặc fallback về container name trong Docker
+        target: isDocker
+          ? 'http://xiaozhi-esp32-server-api-dev:8003'
+          : 'http://localhost:8002',
+        changeOrigin: true,
+        ws: true, // Enable websocket proxy
+        secure: false, // Không cần SSL trong dev mode
+        logLevel: 'debug' // Để debug proxy (tùy chọn)
       }
     },
     client: {
@@ -93,6 +118,14 @@ module.exports = defineConfig({
     config.optimization.minimize(true);
   },
   configureWebpack: config => {
+    if (process.env.NODE_ENV === 'development') {
+      config.watchOptions = {
+        poll: 1000, // Kiểm tra thay đổi mỗi giây (cần cho Docker volume mounts)
+        aggregateTimeout: 300, // Đợi 300ms sau khi file thay đổi
+        ignored: /node_modules/ // Bỏ qua node_modules
+      };
+    }
+  
     if (process.env.NODE_ENV === 'production') {
       // 开启多线程编译
       config.optimization = {

@@ -329,7 +329,7 @@ export default {
 
   // Login page text
   'login.title': 'Login',
-  'login.welcome': 'WELCOME TO LOGIN',
+  'login.welcome': 'WELCOME TO MINICA',
   'login.username': 'Username',
   'login.usernamePlaceholder': 'Please enter username',
   'login.mobilePlaceholder': 'Please enter mobile number',

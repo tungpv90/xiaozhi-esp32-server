@@ -1,0 +1,149 @@
+# Docker Development Mode - Hot Reload Enabled
+# Sử dụng: docker-compose -f docker-compose.dev.yml up
+# Hoặc: docker-compose -f docker-compose.dev.yml up --build
+
+version: '3'
+services:
+  # Server模块 - Python với source code mount
+  xiaozhi-esp32-server:
+    build:
+      context: ../../
+      dockerfile: Dockerfile-server-combined
+    image: xiaozhi-esp32-server:server_dev
+    container_name: xiaozhi-esp32-server-dev
+    depends_on:
+      - xiaozhi-esp32-server-db
+      - xiaozhi-esp32-server-redis
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - "8000:8000"  # WebSocket
+      - "8003:8003"  # HTTP
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - TZ=Asia/Shanghai
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount toàn bộ source code Python - thay đổi code sẽ phản ánh ngay
+      - ../../main/xiaozhi-server:/opt/xiaozhi-esp32-server
+      # Data và config riêng biệt
+      - ./data:/opt/xiaozhi-esp32-server/data
+      - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+    # Lưu ý: Python không có auto-reload, cần restart container khi thay đổi code
+    # Hoặc dùng: docker-compose -f docker-compose.dev.yml restart xiaozhi-esp32-server
+
+  # manager-api模块 - Spring Boot với Maven và source code mount
+  xiaozhi-esp32-server-api:
+    build:
+      context: ../../
+      dockerfile: Dockerfile-api-dev
+    image: xiaozhi-esp32-server:api_dev
+    container_name: xiaozhi-esp32-server-api-dev
+    restart: unless-stopped
+    networks:
+      - default
+    depends_on:
+      xiaozhi-esp32-server-db:
+        condition: service_healthy
+      xiaozhi-esp32-server-redis:
+        condition: service_healthy
+    ports:
+      - "8002:8003"  # Spring Boot API
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_DATASOURCE_DRUID_URL=jdbc:mysql://xiaozhi-esp32-server-db:3306/xiaozhi_esp32_server?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&connectTimeout=30000&socketTimeout=30000&autoReconnect=true&failOverReadOnly=false&maxReconnects=10
+      - SPRING_DATASOURCE_DRUID_USERNAME=root
+      - SPRING_DATASOURCE_DRUID_PASSWORD=123456
+      - SPRING_DATA_REDIS_HOST=xiaozhi-esp32-server-redis
+      - SPRING_DATA_REDIS_PASSWORD=
+      - SPRING_DATA_REDIS_PORT=6379
+      # Spring Boot DevTools settings
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+      # dev mode
+      - SERVER_PORT=8003  # Override port từ application.yml
+      
+    volumes:
+      # Mount source code - Spring Boot DevTools sẽ tự động reload
+      - ../../main/manager-api/src:/app/src
+      - ../../main/manager-api/pom.xml:/app/pom.xml
+      - ./uploadfile:/uploadfile
+      # Maven cache để tăng tốc build
+      - maven-cache:/root/.m2
+
+  # manager-web模块 - Vue dev server với hot-reload
+  xiaozhi-esp32-server-web:
+    build:
+      context: ../../
+      dockerfile: Dockerfile-web-dev
+    image: xiaozhi-esp32-server:web_dev
+    container_name: xiaozhi-esp32-server-web-dev
+    restart: unless-stopped
+    networks:
+      - default
+    depends_on:
+      - xiaozhi-esp32-server-api  # Đảm bảo API service khởi động trước
+    ports:
+      - "8001:8001"  # Vue dev server
+    environment:
+      - TZ=Asia/Shanghai
+      - NODE_ENV=development
+      # Enable polling để hot-reload hoạt động tốt trong Docker
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      # Docker environment flag - để vue.config.js nhận biết đang chạy trong Docker
+      - DOCKER_ENV=true
+      # API Base URL - sử dụng relative path để proxy hoạt động
+      - VUE_APP_API_BASE_URL=/xiaozhi
+      - VUE_APP_PUBLIC_PATH=/
+    volumes:
+      # Mount toàn bộ source code Vue - hot-reload tự động
+      - ../../main/manager-web:/app
+      # Exclude node_modules để tránh conflict
+      - /app/node_modules
+    # Vue dev server sẽ tự động reload khi file thay đổi
+
+  # 数据库模块
+  xiaozhi-esp32-server-db:
+    image: mysql:latest
+    container_name: xiaozhi-esp32-server-db
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - default
+    expose:
+      - 3306
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=xiaozhi_esp32_server
+      - MYSQL_INITDB_ARGS="--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+
+  # redis模块
+  xiaozhi-esp32-server-redis:
+    image: redis
+    expose:
+      - 6379
+    container_name: xiaozhi-esp32-server-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - default
+
+volumes:
+  maven-cache:
+
+networks:
+  default:
