@@ -35,7 +35,7 @@
               <el-table-column :label="$t('device.bindTime')" prop="bindTime" align="center"></el-table-column>
               <el-table-column :label="$t('device.lastConversation')" prop="lastConversation"
                 align="center"></el-table-column>
-              <el-table-column :label="$t('device.deviceStatus')" prop="deviceStatus" align="center">
+              <el-table-column v-if="mqttServiceAvailable" :label="$t('device.deviceStatus')" prop="deviceStatus" align="center">
                 <template slot-scope="scope">
                   <el-tag v-if="scope.row.deviceStatus === 'online'" type="success">{{ $t('device.online') }}</el-tag>
                   <el-tag v-else type="danger">{{ $t('device.offline') }}</el-tag>
@@ -63,6 +63,9 @@
                 <template slot-scope="scope">
                   <el-button size="mini" type="text" @click="handleUnbind(scope.row.device_id)">
                     {{ $t('device.unbind') }}
+                  </el-button>
+                  <el-button v-if="isGenerate(scope.row)" size="mini" type="text" @click="handleGenertor(scope.row)">
+                    {{ $t('device.deviceThemeGeneration') }}
                   </el-button>
                 </template>
               </el-table-column>
@@ -116,7 +119,9 @@
       @refresh="fetchBindDevices(currentAgentId)" />
     <ManualAddDeviceDialog :visible.sync="manualAddDeviceDialogVisible" :agent-id="currentAgentId"
       @refresh="fetchBindDevices(currentAgentId)" />
-
+    <el-footer>
+      <version-footer />
+    </el-footer>
   </div>
 </template>
 
@@ -125,12 +130,14 @@ import Api from '@/apis/api';
 import AddDeviceDialog from "@/components/AddDeviceDialog.vue";
 import HeaderBar from "@/components/HeaderBar.vue";
 import ManualAddDeviceDialog from "@/components/ManualAddDeviceDialog.vue";
+import VersionFooter from "@/components/VersionFooter.vue";
 
 export default {
   components: {
     HeaderBar,
     AddDeviceDialog,
-    ManualAddDeviceDialog
+    ManualAddDeviceDialog,
+    VersionFooter
   },
   data() {
     return {
@@ -147,6 +154,7 @@ export default {
       loading: false,
       userApi: null,
       firmwareTypes: [],
+      mqttServiceAvailable: false, // MQTT服务是否可用
     };
   },
   computed: {
@@ -333,6 +341,13 @@ export default {
         });
       });
     },
+    handleGenertor(row) {
+      const pathname = window.location.pathname;
+      const basePath = pathname.split('/').slice(0, -1).join('/');
+      const url = `${window.location.origin}${basePath}/generator/?deviceId=${row.device_id}`;
+      sessionStorage.setItem('devicePath', window.location.href);
+      window.location.href = url;
+    },
     goFirst() {
       this.currentPage = 1;
     },
@@ -384,7 +399,10 @@ export default {
 
     // 获取设备状态
     fetchDeviceStatus(agentId) {
+      // 开启表格等待状态，处理动态加载表头导致鼠标所在行的hover事件无法移除的问题
+      this.loading = true;
       Api.device.getDeviceStatus(agentId, ({ data }) => {
+        this.loading = false;
         if (data.code === 0) {
           try {
             // 解析后端返回的设备状态JSON
@@ -392,12 +410,21 @@ export default {
 
             // 直接使用解析后的数据作为设备状态映射（不需要devices字段包装）
             if (statusData && typeof statusData === 'object') {
+              // 成功获取到设备状态
+              this.mqttServiceAvailable = true;
               // 更新设备状态
               this.updateDeviceStatusFromResponse(statusData);
+            } else {
+              // 数据格式不正确，MQTT服务不可用
+              this.mqttServiceAvailable = false;
             }
           } catch (error) {
-            // JSON解析失败，忽略状态更新
+            // JSON解析失败，MQTT服务不可用
+            this.mqttServiceAvailable = false;
           }
+        } else {
+          // 接口调用失败，MQTT服务不可用
+          this.mqttServiceAvailable = false;
         }
       });
     },
@@ -457,6 +484,11 @@ export default {
         this.$message.error(msg || this.$t('message.error'))
       })
     },
+    // 判断是否可以生成表情、主题、字体bin文件
+    isGenerate(row) {
+      const version = row.firmwareVersion.replace(/\./g, '');
+      return Number(version) >= 200;
+    },
   }
 };
 </script>
@@ -476,11 +508,9 @@ export default {
 }
 
 .main-wrapper {
-  margin: 5px 22px;
+  height: calc(100vh - 63px - 35px - 72px);
+  margin: 0 22px;
   border-radius: 15px;
-  min-height: calc(100vh - 24vh);
-  height: auto;
-  max-height: 80vh;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   position: relative;
   background: rgba(237, 242, 255, 0.5);
@@ -617,7 +647,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  padding-bottom: 10px;
+  /* padding-bottom: 10px; */
 }
 
 
@@ -779,7 +809,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 40vh);
+  /* max-height: calc(100vh - 40vh); */
 }
 
 :deep(.el-table__body-wrapper) {
@@ -804,7 +834,7 @@ export default {
 }
 
 :deep(.el-checkbox__inner) {
-  background-color: #eeeeee !important;
+  background-color: #ffffff !important;
   border-color: #cccccc !important;
 }
 

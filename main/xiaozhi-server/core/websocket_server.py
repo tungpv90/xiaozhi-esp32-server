@@ -1,10 +1,37 @@
 import asyncio
-import json
+import logging
 
 import websockets
 from config.logger import setup_logging
+
+
+class SuppressInvalidHandshakeFilter(logging.Filter):
+    """过滤掉无效握手错误日志（如HTTPS访问WS端口）"""
+
+    def filter(self, record):
+        msg = record.getMessage()
+        suppress_keywords = [
+            "opening handshake failed",
+            "did not receive a valid HTTP request",
+            "connection closed while reading HTTP request",
+            "line without CRLF",
+        ]
+        return not any(keyword in msg for keyword in suppress_keywords)
+
+
+def _setup_websockets_logger():
+    """配置 websockets 相关的所有 logger，过滤无效握手错误"""
+    filter_instance = SuppressInvalidHandshakeFilter()
+    for logger_name in ["websockets", "websockets.server", "websockets.client"]:
+        logger = logging.getLogger(logger_name)
+        logger.addFilter(filter_instance)
+
+
+_setup_websockets_logger()
+
+
 from core.connection import ConnectionHandler
-from config.config_loader import get_config_from_api
+from config.config_loader import get_config_from_api_async
 from core.auth import AuthManager, AuthenticationError
 from core.utils.modules_initialize import initialize_modules
 from core.utils.util import check_vad_update, check_asr_update
@@ -33,8 +60,6 @@ class WebSocketServer:
         self._intent = modules["intent"] if "intent" in modules else None
         self._memory = modules["memory"] if "memory" in modules else None
 
-        self.active_connections = set()
-
         auth_config = self.config["server"].get("auth", {})
         self.auth_enable = auth_config.get("enabled", False)
         # 设备白名单
@@ -53,7 +78,7 @@ class WebSocketServer:
         ):
             await asyncio.Future()
 
-    async def _handle_connection(self, websocket):
+    async def _handle_connection(self, websocket: websockets.ServerConnection):
         headers = dict(websocket.request.headers)
         if headers.get("device-id", None) is None:
             # 尝试从 URL 的查询参数中获取 device-id
@@ -98,14 +123,11 @@ class WebSocketServer:
             self._intent,
             self,  # 传入server实例
         )
-        self.active_connections.add(handler)
         try:
             await handler.handle_connection(websocket)
         except Exception as e:
             self.logger.bind(tag=TAG).error(f"处理连接时出错: {e}")
         finally:
-            # 确保从活动连接集合中移除
-            self.active_connections.discard(handler)
             # 强制关闭连接（如果还没有关闭的话）
             try:
                 # 安全地检查WebSocket状态并关闭
@@ -138,8 +160,8 @@ class WebSocketServer:
         """
         try:
             async with self.config_lock:
-                # 重新获取配置
-                new_config = get_config_from_api(self.config)
+                # 重新获取配置（使用异步版本）
+                new_config = await get_config_from_api_async(self.config)
                 if new_config is None:
                     self.logger.bind(tag=TAG).error("获取新配置失败")
                     return False
@@ -181,7 +203,7 @@ class WebSocketServer:
             self.logger.bind(tag=TAG).error(f"更新服务器配置失败: {str(e)}")
             return False
 
-    async def _handle_auth(self, websocket):
+    async def _handle_auth(self, websocket: websockets.ServerConnection):
         # 先认证，后建立连接
         if self.auth_enable:
             headers = dict(websocket.request.headers)

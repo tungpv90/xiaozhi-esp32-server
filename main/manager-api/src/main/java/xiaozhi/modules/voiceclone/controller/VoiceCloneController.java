@@ -83,6 +83,13 @@ public class VoiceCloneController {
                 return new Result<String>().error(ErrorCode.VOICE_CLONE_NOT_AUDIO_FILE);
             }
 
+            // 加强验证文件扩展名
+            String originalFilename = voiceFile.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            if (!extension.equals(".mp3") && !extension.equals(".wav")) {
+                return new Result<String>().error("只允许上传.mp3和.wav格式的文件");
+            }
+
             // 验证文件大小 (最大10MB)
             if (voiceFile.getSize() > 10 * 1024 * 1024) {
                 return new Result<String>().error(ErrorCode.VOICE_CLONE_AUDIO_TOO_LARGE);
@@ -107,10 +114,10 @@ public class VoiceCloneController {
             String name = params.get("name");
 
             if (id == null || id.isEmpty()) {
-                return new Result<String>().error(ErrorCode.IDENTIFIER_NOT_NULL, "唯一标识不能为空");
+                return new Result<String>().error(ErrorCode.IDENTIFIER_NOT_NULL);
             }
-            if (name == null) {
-                return new Result<String>().error(ErrorCode.NOT_NULL, "名称不能为空");
+            if (name == null || name.isEmpty()) {
+                return new Result<String>().error(ErrorCode.VOICE_CLONE_NAME_NOT_NULL);
             }
             // 检查权限
             checkPermission(id);
@@ -119,7 +126,7 @@ public class VoiceCloneController {
             redisUtils.delete(RedisKeys.getTimbreNameById(id));
             return new Result<String>();
         } catch (Exception e) {
-            return new Result<String>().error(ErrorCode.UPDATE_DATA_FAILED, "更新失败: " + e.getMessage());
+            return new Result<String>().error(ErrorCode.UPDATE_DATA_FAILED, e.getMessage());
         }
     }
 
@@ -131,7 +138,7 @@ public class VoiceCloneController {
         checkPermission(id);
         byte[] audioData = voiceCloneService.getVoiceData(id);
         if (audioData == null) {
-            return new Result<String>().error(ErrorCode.RESOURCE_NOT_FOUND, "音频不存在");
+            return new Result<String>().error(ErrorCode.VOICE_CLONE_AUDIO_NOT_FOUND);
         }
         String uuid = UUID.randomUUID().toString();
         redisUtils.set(RedisKeys.getVoiceCloneAudioIdKey(uuid), id);

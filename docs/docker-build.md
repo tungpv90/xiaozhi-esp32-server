@@ -32,8 +32,6 @@ docker pull ghcr.io/tungpv90/xiaozhi-esp32-server:web_latest
 cd /home/server.minica.vn/public_html/xiaozhi-server
 docker compose -f docker-compose_all.yml up -d
 
-```
-
 
 docker compose -f docker-compose_all.yml down
 

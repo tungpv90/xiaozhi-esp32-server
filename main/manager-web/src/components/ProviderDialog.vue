@@ -165,7 +165,8 @@ export default {
         'number': this.$t('providerDialog.numberType'),
         'boolean': this.$t('providerDialog.booleanType'),
         'dict': this.$t('providerDialog.dictType'),
-        'array': this.$t('providerDialog.arrayType')
+        'array': this.$t('providerDialog.arrayType'),
+        'RAG': this.$t('providerDialog.ragType')
       };
       return typeMap[type];
     },

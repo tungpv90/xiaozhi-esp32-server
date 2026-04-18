@@ -152,4 +152,39 @@ public class RedisKeys {
     public static String getVoiceCloneAudioIdKey(String uuid) {
         return "voiceClone:audio:id:" + uuid;
     }
+
+    /**
+     * 获取知识库缓存key
+     */
+    public static String getKnowledgeBaseCacheKey(String datasetId) {
+        return "knowledge:base:" + datasetId;
+    }
+
+    /**
+     * 获取临时注册设备标记key
+     */
+    public static String getTmpRegisterMacKey(String deviceId) {
+        return "tmp_register_mac:" + deviceId;
+    }
+
+    /**
+     * OTA绑定设备
+     */
+    public static String getOtaActivationCode(String activationCode) {
+        return "ota:activation:code:" + activationCode;
+    }
+
+    /**
+     * OTA获取设备mac相关信息
+     */
+    public static String getOtaDeviceActivationInfo(String deviceId) {
+        return "ota:activation:data:" + deviceId;
+    }
+
+    /**
+     * OTA上传次数
+     */
+    public static String getOtaUploadCountKey(Long username) {
+        return "ota:upload:count:" + username;
+    }
 }

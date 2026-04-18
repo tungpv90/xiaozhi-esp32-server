@@ -1,11 +1,17 @@
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from core.connection import ConnectionHandler
 from ..base import IntentProviderBase
 from plugins_func.functions.play_music import initialize_music_handler
 from config.logger import setup_logging
+from core.utils.util import get_system_error_response
 import re
 import json
 import hashlib
 import time
+
+
 
 TAG = __name__
 logger = setup_logging()
@@ -55,7 +61,6 @@ class IntentProvider(IntentProviderBase):
         prompt = (
             "【严格格式要求】你必须只能返回JSON格式，绝对不能返回任何自然语言！\n\n"
             "你是一个意图识别助手。请分析用户的最后一句话，判断用户意图并调用相应的函数。\n\n"
-
             "【重要规则】以下类型的查询请直接返回result_for_context，无需调用函数：\n"
             "- 询问当前时间（如：现在几点、当前时间、查询时间等）\n"
             "- 询问今天日期（如：今天几号、今天星期几、今天是什么日期等）\n"
@@ -116,14 +121,20 @@ class IntentProvider(IntentProviderBase):
         return prompt
 
     def replyResult(self, text: str, original_text: str):
-        llm_result = self.llm.response_no_stream(
-            system_prompt=text,
-            user_prompt="请根据以上内容，像人类一样说话的口吻回复用户，要求简洁，请直接返回结果。用户现在说："
-            + original_text,
-        )
-        return llm_result
+        try:
+            llm_result = self.llm.response_no_stream(
+                system_prompt=text,
+                user_prompt="请根据以上内容，像人类一样说话的口吻回复用户，要求简洁，请直接返回结果。用户现在说："
+                + original_text,
+            )
+            return llm_result
+        except Exception as e:
+            logger.bind(tag=TAG).error(f"Error in generating reply result: {e}")
+            return get_system_error_response(self.config)
 
-    async def detect_intent(self, conn, dialogue_history: List[Dict], text: str) -> str:
+    async def detect_intent(
+        self, conn: "ConnectionHandler", dialogue_history: List[Dict], text: str
+    ) -> str:
         if not self.llm:
             raise ValueError("LLM provider not set")
         if conn.func_handler is None:
@@ -195,14 +206,18 @@ class IntentProvider(IntentProviderBase):
         llm_start_time = time.time()
         logger.bind(tag=TAG).debug(f"开始LLM意图识别调用, 模型: {model_info}")
 
-        intent = self.llm.response_no_stream(
-            system_prompt=prompt_music, user_prompt=user_prompt
-        )
+        try:
+            intent = self.llm.response_no_stream(
+                system_prompt=prompt_music, user_prompt=user_prompt
+            )
+        except Exception as e:
+            logger.bind(tag=TAG).error(f"Error in intent detection LLM call: {e}")
+            return '{"function_call": {"name": "continue_chat"}}'
 
         # 记录LLM调用完成时间
         llm_time = time.time() - llm_start_time
         logger.bind(tag=TAG).debug(
-            f"LLM意图识别完成, 模型: {model_info}, 调用耗时: {llm_time:.4f}秒"
+            f"外挂的大模型意图识别完成, 模型: {model_info}, 调用耗时: {llm_time:.4f}秒"
         )
 
         # 记录后处理开始时间
@@ -238,8 +253,10 @@ class IntentProvider(IntentProviderBase):
                 # 处理不同类型的意图
                 if function_name == "result_for_context":
                     # 处理基础信息查询，直接从context构建结果
-                    logger.bind(tag=TAG).info("检测到result_for_context意图，将使用上下文信息直接回答")
-                    
+                    logger.bind(tag=TAG).info(
+                        "检测到result_for_context意图，将使用上下文信息直接回答"
+                    )
+
                 elif function_name == "continue_chat":
                     # 处理普通对话
                     # 保留非工具相关的消息
@@ -249,7 +266,7 @@ class IntentProvider(IntentProviderBase):
                         if msg.role not in ["tool", "function"]
                     ]
                     conn.dialogue.dialogue = clean_history
-                    
+
                 else:
                     # 处理函数调用
                     logger.bind(tag=TAG).info(f"检测到函数调用意图: {function_name}")

@@ -1,10 +1,6 @@
 package xiaozhi.modules.timbre.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -128,12 +124,15 @@ public class TimbreServiceImpl extends BaseServiceImpl<TimbreDao, TimbreEntity> 
         if (StringUtils.isNotBlank(voiceName)) {
             queryWrapper.like("name", voiceName);
         }
-        List<TimbreEntity> timbreEntities = timbreDao.selectList(queryWrapper);
-        if (timbreEntities == null) {
-            timbreEntities = new ArrayList<>();
-        }
+        List<TimbreEntity> timbreEntities = Optional.ofNullable(timbreDao.selectList(queryWrapper)).orElseGet(ArrayList::new);
         List<VoiceDTO> voiceDTOs = timbreEntities.stream()
-                .map(entity -> new VoiceDTO(entity.getId(), entity.getName()))
+                .map(entity -> {
+                    VoiceDTO dto = new VoiceDTO(entity.getId(), entity.getName());
+                    dto.setVoiceDemo(entity.getVoiceDemo());
+                    dto.setLanguages(entity.getLanguages()); // 设置语言类型
+                    dto.setIsClone(false); // 设置为普通音色
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         // 获取当前登录用户ID
@@ -146,6 +145,10 @@ public class TimbreServiceImpl extends BaseServiceImpl<TimbreDao, TimbreEntity> 
                 VoiceDTO voiceDTO = new VoiceDTO();
                 voiceDTO.setId(entity.getId());
                 voiceDTO.setName(MessageUtils.getMessage(ErrorCode.VOICE_CLONE_PREFIX) + entity.getName());
+                // 保留从数据库查询到的voiceDemo字段
+                voiceDTO.setVoiceDemo(entity.getVoiceDemo());
+                voiceDTO.setLanguages(entity.getLanguages());
+                voiceDTO.setIsClone(true); // 设置为克隆音色
                 redisUtils.set(RedisKeys.getTimbreNameById(voiceDTO.getId()), voiceDTO.getName(),
                         RedisUtils.NOT_EXPIRE);
                 voiceDTOs.add(0, voiceDTO);
@@ -205,6 +208,10 @@ public class TimbreServiceImpl extends BaseServiceImpl<TimbreDao, TimbreEntity> 
         if (list.isEmpty()) {
             return null;
         }
-        return new VoiceDTO(list.get(0).getId(), list.get(0).getName());
+        TimbreEntity entity = list.get(0);
+        VoiceDTO dto = new VoiceDTO(entity.getId(), entity.getName());
+        dto.setVoiceDemo(entity.getVoiceDemo());
+        dto.setIsClone(false); // 设置为普通音色
+        return dto;
     }
 }

@@ -5,11 +5,12 @@
         <div style="
             display: flex;
             align-items: center;
-            margin-top: 15px;
-            margin-left: 10px;
+            margin-top: 11px;
+            margin-left: 11px;
             gap: 10px;
           ">
-          <img loading="lazy" alt="" src="@/assets/xiaozhi-ai.png" style="height: 18px" />
+          <img loading="lazy" alt="" src="@/assets/xiaozhi-logo.png" style="width: 42px; height: 42px" />
+          <img loading="lazy" alt="" :src="xiaozhiAiIcon" style="height: 20px" />
         </div>
       </el-header>
       <div class="login-person">
@@ -47,6 +48,15 @@
                 </el-dropdown-item>
                 <el-dropdown-item @click.native="changeLanguage('en')">
                   {{ $t("language.en") }}
+                </el-dropdown-item>
+                <el-dropdown-item @click.native="changeLanguage('de')">
+                  {{ $t("language.de") }}
+                </el-dropdown-item>
+                <el-dropdown-item @click.native="changeLanguage('vi')">
+                  {{ $t("language.vi") }}
+                </el-dropdown-item>
+                <el-dropdown-item @click.native="changeLanguage('pt_BR')">
+                  {{ $t("language.ptBR") }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -126,11 +136,11 @@
           </div>
           <div style="font-size: 14px; color: #979db1">
             {{ $t("login.agreeTo") }}
-            <div style="display: inline-block; color: #5778ff; cursor: pointer">
+            <div style="display: inline-block; color: #5778ff; cursor: pointer" @click="openPage('/user-agreement.html')">
               {{ $t("login.userAgreement") }}
             </div>
             {{ $t("login.and") }}
-            <div style="display: inline-block; color: #5778ff; cursor: pointer">
+            <div style="display: inline-block; color: #5778ff; cursor: pointer" @click="openPage('/privacy-policy.html')">
               {{ $t("login.privacyPolicy") }}
             </div>
           </div>
@@ -149,6 +159,7 @@ import VersionFooter from "@/components/VersionFooter.vue";
 import i18n, { changeLanguage } from "@/i18n";
 import { getUUID, goToPage, showDanger, showSuccess, sm2Encrypt, validateMobile } from "@/utils";
 import { mapState } from "vuex";
+import featureManager from "@/utils/featureManager";
 
 export default {
   name: "login",
@@ -176,8 +187,32 @@ export default {
           return this.$t("language.zhTW");
         case "en":
           return this.$t("language.en");
+        case "de":
+          return this.$t("language.de");
+        case "vi":
+          return this.$t("language.vi");
+        case "pt_BR":
+          return this.$t("language.ptBR");
         default:
           return this.$t("language.zhCN");
+      }
+    },
+    // 根据当前语言获取对应的xiaozhi-ai图标
+    xiaozhiAiIcon() {
+      const currentLang = this.currentLanguage;
+      switch (currentLang) {
+        case "zh_CN":
+          return require("@/assets/xiaozhi-ai.png");
+        case "zh_TW":
+          return require("@/assets/xiaozhi-ai_zh_TW.png");
+        case "en":
+          return require("@/assets/xiaozhi-ai_en.png");
+        case "de":
+          return require("@/assets/xiaozhi-ai_de.png");
+        case "vi":
+          return require("@/assets/xiaozhi-ai_vi.png");
+        default:
+          return require("@/assets/xiaozhi-ai.png");
       }
     },
   },
@@ -206,8 +241,17 @@ export default {
     });
   },
   methods: {
+    openPage(url) {
+      const lang = this.$i18n ? this.$i18n.locale : 'zh_CN';
+      if (!lang.startsWith('zh')) {
+        url = url.replace('.html', '-en.html');
+      }
+      window.open(url, '_blank');
+    },
     fetchCaptcha() {
-      if (this.$store.getters.getToken) {
+      // 处理手动清空localstorage导致无法获取验证码的问题
+      const token = localStorage.getItem('token')
+      if (token) {
         if (this.$route.path !== "/home") {
           this.$router.push("/home");
         }
@@ -258,6 +302,17 @@ export default {
         return false;
       }
       return true;
+    },
+    
+    getUserInfo() {
+      Api.user.getUserInfo(({ data }) => {
+        if (data.code === 0) {
+          this.$store.commit("setUserInfo", data.data);
+          goToPage("/home");
+        } else {
+          showDanger("用户信息获取失败");
+        }
+      });
     },
 
     async login() {
@@ -312,20 +367,13 @@ export default {
         ({ data }) => {
           showSuccess(this.$t('login.loginSuccess'));
           this.$store.commit("setToken", JSON.stringify(data.data));
-          goToPage("/home");
+          this.getUserInfo();
         },
         (err) => {
           // 直接使用后端返回的国际化消息
           let errorMessage = err.data.msg || "登录失败";
 
           showDanger(errorMessage);
-          if (
-            err.data != null &&
-            err.data.msg != null &&
-            err.data.msg.indexOf("图形验证码") > -1 || err.data.msg.indexOf("Captcha") > -1
-          ) {
-            this.fetchCaptcha();
-          }
         }
       );
 
