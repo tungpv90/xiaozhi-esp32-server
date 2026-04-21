@@ -256,4 +256,5 @@ public interface ErrorCode {
     int MCP_ACCESS_POINT_ADDRESS_NO_PERMISSION = 10200; // 没有权限查看该智能体的MCP接入点地址
     int MCP_ACCESS_POINT_ADDRESS_NOT_CONFIGURED = 10201; // 请联系管理员进入参数管理配置mcp接入点地址
     int MCP_ACCESS_POINT_TOOLS_LIST_NO_PERMISSION = 10202; // 没有权限查看该智能体的MCP工具列表
+    int USERNAME_ALREADY_REGISTERED = 10203; // 用户名已被注册
 }

@@ -145,7 +145,11 @@ public class LoginController {
         // 按照用户名获取用户
         SysUserDTO userDTO = sysUserService.getByUsername(login.getUsername());
         if (userDTO != null) {
-            throw new RenException(ErrorCode.PHONE_ALREADY_REGISTERED);
+            if (isMobileRegister) {
+                throw new RenException(ErrorCode.PHONE_ALREADY_REGISTERED);
+            } else {
+                throw new RenException(ErrorCode.USERNAME_ALREADY_REGISTERED);
+            }
         }
         userDTO = new SysUserDTO();
         userDTO.setUsername(login.getUsername());
