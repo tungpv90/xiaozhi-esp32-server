@@ -745,6 +745,134 @@ sudo nano /etc/logrotate.d/xiaozhi
 
 ---
 
+## PHẦN 9: CẬP NHẬT SOURCE CODE QUA CI/CD
+
+### Quy trình chuẩn — chỉ cần push code
+
+Sau khi đã setup CI/CD xong, mọi thay đổi đều deploy tự động:
+
+```bash
+# Trên máy local của bạn
+git add .
+git commit -m "mô tả thay đổi"
+git push origin main
+```
+
+GitHub Actions tự động chạy, không cần làm gì thêm trên server.
+
+---
+
+### Theo dõi tiến trình deploy
+
+Vào GitHub repo → tab **Actions** → chọn workflow đang chạy để xem log realtime.
+
+Hoặc xem log trên server ngay sau khi push:
+
+```bash
+# Xem log Java API sau khi restart
+sudo journalctl -u xiaozhi-api -f
+
+# Xem log Python server sau khi restart
+sudo journalctl -u xiaozhi-server -f
+```
+
+---
+
+### Các trường hợp thay đổi code
+
+#### Chỉ sửa Python (xiaozhi-server)
+
+CI/CD vẫn build cả Java + Vue (mất ~3–5 phút), nhưng chỉ có Python source được rsync và restart `xiaozhi-server`.
+
+Nếu muốn deploy Python nhanh hơn **thủ công** trên server:
+
+```bash
+cd /home/xiaozhi/app
+git pull origin main
+
+sudo systemctl restart xiaozhi-server
+sudo journalctl -u xiaozhi-server -f
+```
+
+#### Chỉ sửa Java (manager-api)
+
+CI/CD build lại JAR và restart `xiaozhi-api`. Thủ công trên server:
+
+```bash
+cd /home/xiaozhi/app
+git pull origin main
+
+cd main/manager-api
+mvn clean package -DskipTests -q
+
+sudo systemctl restart xiaozhi-api
+sudo journalctl -u xiaozhi-api -f
+```
+
+#### Chỉ sửa Vue (manager-web)
+
+CI/CD build lại `dist/` và rsync lên server, reload nginx. Thủ công:
+
+```bash
+cd /home/xiaozhi/app
+git pull origin main
+
+cd main/manager-web
+npm install --legacy-peer-deps
+npm run build
+
+sudo systemctl reload nginx
+```
+
+---
+
+### Trigger deploy thủ công (không cần push code)
+
+Vào GitHub repo → tab **Actions** → chọn workflow **Deploy to Ubuntu** → nút **Run workflow** → **Run workflow**.
+
+Dùng khi: server bị restart, muốn redeploy lại phiên bản hiện tại mà không thay đổi code.
+
+---
+
+### Kiểm tra deploy thành công
+
+```bash
+# Xem thời gian restart gần nhất
+sudo systemctl status xiaozhi-api   | grep "Active:"
+sudo systemctl status xiaozhi-server | grep "Active:"
+
+# Xem version đang chạy
+curl -s http://localhost/xiaozhi/sys/version | python3 -m json.tool
+```
+
+---
+
+### Rollback khi deploy lỗi
+
+Nếu deploy mới làm hỏng service, rollback về commit trước:
+
+```bash
+cd /home/xiaozhi/app
+
+# Xem danh sách commit
+git log --oneline -10
+
+# Quay về commit cụ thể
+git checkout <COMMIT_HASH> -- main/xiaozhi-server/
+# hoặc reset toàn bộ
+git reset --hard <COMMIT_HASH>
+
+# Build lại Java nếu cần
+cd main/manager-api
+mvn clean package -DskipTests -q
+
+# Restart services
+sudo systemctl restart xiaozhi-api
+sudo systemctl restart xiaozhi-server
+```
+
+---
+
 ## TỔNG KẾT
 
 ### Lần đầu (thủ công)
