@@ -75,6 +75,16 @@ DIRECT_ANSWER_TOOL = {
 
 
 class ConnectionHandler:
+    @staticmethod
+    def _normalize_text_value(value):
+        if value is None:
+            return None
+        if isinstance(value, bytes):
+            return value.decode("utf-8", errors="replace")
+        if isinstance(value, str):
+            return value
+        return str(value)
+
     def __init__(
             self,
             config: Dict[str, Any],
@@ -189,18 +199,6 @@ class ConnectionHandler:
 
         # 初始化提示词管理器
         self.prompt_manager = PromptManager(self.config, self.logger)
-
-        @staticmethod
-        def _normalize_text_value(value):
-            if value is None:
-                return None
-            if isinstance(value, bytes):
-                return value.decode("utf-8", errors="replace")
-            if isinstance(value, str):
-                return value
-            return str(value)
-
-        self._normalize_text_value = _normalize_text_value
 
         # 初始化通话状态
         self.calling = False

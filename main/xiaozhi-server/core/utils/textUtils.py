@@ -98,7 +98,8 @@ async def get_emotion(conn: "ConnectionHandler", text):
                     "text": emoji,
                     "emotion": emotion,
                     "session_id": conn.session_id,
-                }
+                },
+                ensure_ascii=False,
             )
         )
     except Exception as e:
