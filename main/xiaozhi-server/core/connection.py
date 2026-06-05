@@ -190,6 +190,18 @@ class ConnectionHandler:
         # 初始化提示词管理器
         self.prompt_manager = PromptManager(self.config, self.logger)
 
+        @staticmethod
+        def _normalize_text_value(value):
+            if value is None:
+                return None
+            if isinstance(value, bytes):
+                return value.decode("utf-8", errors="replace")
+            if isinstance(value, str):
+                return value
+            return str(value)
+
+        self._normalize_text_value = _normalize_text_value
+
         # 初始化通话状态
         self.calling = False
 
@@ -1011,6 +1023,7 @@ class ConnectionHandler:
                     if "content" in response:
                         content = response["content"]
                         tools_call = None
+                    content = self._normalize_text_value(content)
                     if content is not None and len(content) > 0:
                         content_arguments += content
 
@@ -1046,7 +1059,7 @@ class ConnectionHandler:
                                             )
                                         )
                 else:
-                    content = response
+                    content = self._normalize_text_value(response)
 
                 # 在llm回复中获取情绪表情，一轮对话只在开头获取一次
                 if emotion_flag and content is not None and content.strip():

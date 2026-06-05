@@ -268,6 +268,8 @@ async def send_tts_message(conn: "ConnectionHandler", state, text=None):
     """发送 TTS 状态消息"""
     if text is None and state == "sentence_start":
         return
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
     message = {"type": "tts", "state": state, "session_id": conn.session_id}
     if text is not None:
         message["text"] = textUtils.check_emoji(text)
@@ -297,7 +299,7 @@ async def send_tts_message(conn: "ConnectionHandler", state, text=None):
         conn.clearSpeakStatus()
 
     # 发送消息到客户端
-    await conn.websocket.send(json.dumps(message))
+    await conn.websocket.send(json.dumps(message, ensure_ascii=False))
 
 
 async def send_stt_message(conn: "ConnectionHandler", text):
@@ -323,8 +325,10 @@ async def send_stt_message(conn: "ConnectionHandler", text):
         # 如果不是JSON格式，直接使用原始文本
         display_text = text
     stt_text = textUtils.get_string_no_punctuation_or_emoji(display_text)
+    if isinstance(stt_text, bytes):
+        stt_text = stt_text.decode("utf-8", errors="replace")
     await conn.websocket.send(
-        json.dumps({"type": "stt", "text": stt_text, "session_id": conn.session_id})
+        json.dumps({"type": "stt", "text": stt_text, "session_id": conn.session_id}, ensure_ascii=False)
     )
     await send_tts_message(conn, "start")
     # 发送start消息后客户端状态会处于说话中状态，同步服务端状态
@@ -333,9 +337,11 @@ async def send_stt_message(conn: "ConnectionHandler", text):
 
 async def send_display_message(conn: "ConnectionHandler", text):
     """发送纯显示消息"""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
     message = {
         "type": "stt",
         "text": text,
         "session_id": conn.session_id
     }
-    await conn.websocket.send(json.dumps(message))
+    await conn.websocket.send(json.dumps(message, ensure_ascii=False))
