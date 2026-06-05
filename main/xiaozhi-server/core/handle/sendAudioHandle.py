@@ -334,7 +334,6 @@ async def send_stt_message(conn: "ConnectionHandler", text):
     # 发送start消息后客户端状态会处于说话中状态，同步服务端状态
     conn.client_is_speaking = True
 
-
 async def send_display_message(conn: "ConnectionHandler", text):
     """发送纯显示消息"""
     if isinstance(text, bytes):
