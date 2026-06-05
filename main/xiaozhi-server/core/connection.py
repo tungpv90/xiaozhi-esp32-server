@@ -207,6 +207,16 @@ class ConnectionHandler:
         # 初始化提示词管理器
         self.prompt_manager = PromptManager(self.config, self.logger)
 
+    @staticmethod
+    def _normalize_text_value(value):
+        if value is None:
+            return None
+        if isinstance(value, bytes):
+            return value.decode("utf-8", errors="replace")
+        if isinstance(value, str):
+            return value
+        return str(value)
+
     async def handle_connection(self, ws: websockets.ServerConnection):
         try:
             # 获取运行中的事件循环（必须在异步上下文中）
@@ -1005,9 +1015,10 @@ class ConnectionHandler:
                     break
                 if self.intent_type == "function_call" and functions is not None:
                     content, tools_call = response
-                    if "content" in response:
-                        content = response["content"]
+                    if isinstance(response, dict) and "content" in response:
+                        content = response.get("content")
                         tools_call = None
+                    content = self._normalize_text_value(content)
                     if content is not None and len(content) > 0:
                         content_arguments += content
 
@@ -1019,7 +1030,7 @@ class ConnectionHandler:
                         tool_call_flag = True
                         self._merge_tool_calls(tool_calls_list, tools_call)
                 else:
-                    content = response
+                    content = self._normalize_text_value(response)
 
                 # 在llm回复中获取情绪表情，一轮对话只在开头获取一次
                 if emotion_flag and content is not None and content.strip():
