@@ -335,7 +335,6 @@ async def send_stt_message(conn: "ConnectionHandler", text):
     conn.client_is_speaking = True
 
 
-
 async def send_display_message(conn: "ConnectionHandler", text):
     """发送纯显示消息"""
     if isinstance(text, bytes):
