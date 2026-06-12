@@ -222,7 +222,8 @@ selected_module:
   # 语音识别模块，默认使用FunASR本地模型
   ASR: FunASR
   # 将根据配置名称对应的type调用实际的LLM适配器
-  LLM: ChatGLMLLM
+  # Nếu dùng LLM riêng, đổi sang MyLLM
+  LLM: MyLLM
   # 视觉语言大模型
   VLLM: ChatGLMVLLM
   # TTS将根据配置名称对应的type调用实际的TTS适配器
@@ -724,6 +725,17 @@ LLM:
     # Xinference服务地址和模型名称
     model_name: qwen2.5:3b-AWQ  # 使用的小模型名称，用于意图识别
     base_url: http://localhost:9997  # Xinference服务地址
+  MyLLM:
+    # 自定义 OpenAI-compatible LLM
+    # 适用于 vLLM、LM Studio、自建 OpenAI API 兼容服务、Xinference 兼容网关等
+    type: openai
+    base_url: http://127.0.0.1:8000/v1
+    model_name: your-model-name
+    api_key: dummy-key
+    temperature: 0.7
+    max_tokens: 1024
+    top_p: 0.9
+    frequency_penalty: 0
 # VLLM配置（视觉语言大模型）
 VLLM:
   ChatGLMVLLM:
