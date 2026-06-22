@@ -389,6 +389,23 @@ ASR:
     model_dir: models/sherpa-onnx-paraformer-zh-small-2024-03-09
     output_dir: tmp/
     model_type: paraformer
+  NemotronASR:
+    # Nemotron-3.5-0.6B local quantized ASR. Put encoder.onnx, decoder_joiner.onnx,
+    # tokenizer.model, and config.json under model_dir.
+    # Recommended CPU deployment: 4C/8T with AVX-512/AMX, 8GB+ RAM.
+    # backend:
+    #   onnxruntime: for Nemotron ONNX exports, usually encoder.onnx + decoder_joiner.onnx
+    #   sherpa_onnx: for sherpa-onnx exported models, usually model.int8.onnx + tokens.txt
+    type: nemotron_local
+    model_dir: models/Nemotron-3.5-0.6B-int8
+    output_dir: tmp/
+    backend: onnxruntime
+    model_type: nemo_streaming
+    sample_rate: 16000
+    num_threads: 4
+    feature_dim: 80
+    decoding_method: greedy_search
+    max_symbols_per_step: 5
   DoubaoASR:
     # 可以在这里申请相关Key等信息
     # https://console.volcengine.com/speech/app
