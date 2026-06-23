@@ -15,10 +15,9 @@
             :placeholder="$t('addressBookManagement.searchPlaceholder')"
             v-model="searchKeyword"
             class="search-input"
-            @keyup.enter="handleSearch"
+            @input="handleSearch"
             clearable
           />
-          <el-button class="btn-search" @click="handleSearch">{{ $t('addressBookManagement.search') }}</el-button>
         </div>
 
         <!-- 智能体列表 -->
@@ -42,9 +41,13 @@
                   <img :src="getDeviceAvatar(device.id)" alt="avatar" />
                 </div>
                 <div class="device-content">
-                  <div class="device-name">{{ device.name }}</div>
+                  <div class="device-name">
+                    <MacAddressMask :macAddress="device.name" />
+                  </div>
                   <div class="device-row">
-                    <span class="device-id">{{ device.deviceId }}</span>
+                    <span class="device-id">
+                      <MacAddressMask :macAddress="device.deviceId" />
+                    </span>
                     <span class="device-status" :class="device.online ? 'online' : 'offline'">
                       {{ device.online ? $t('addressBookManagement.online') : $t('addressBookManagement.offline') }}
                     </span>
@@ -76,10 +79,15 @@
                     @keyup.enter="handleAliasBlur"
                     autofocus
                   />
-                  <span v-else class="device-name-text" @click="handleStartEdit">{{ selectedDevice.name }}</span>
+                  <span v-else class="device-name-text" @click="handleStartEdit">
+                    <MacAddressMask :macAddress="selectedDevice.name" />
+                  </span>
                   <i v-if="!isEditingAlias" class="el-icon-edit" @click="handleStartEdit"></i>
                 </div>
-                <div class="device-mac">{{ $t('addressBookManagement.macAddress') }}：{{ selectedDevice.deviceId }}</div>
+                <div class="device-mac">
+                  {{ $t('addressBookManagement.macAddress') }}：
+                  <MacAddressMask :macAddress="selectedDevice.deviceId" />
+                </div>
                 <div class="device-status">
                   <span>{{ $t('addressBookManagement.status') }}：</span>
                   <span :class="selectedDevice.online ? 'online' : 'offline'">
@@ -133,11 +141,9 @@
                 <p class="section-desc">{{ $t('addressBookManagement.setPermissionDesc', { count: selectedPermissions.length }) }}</p>
               </div>
               <div class="section-actions">
-                <el-button size="small" @click="handleCancel">{{ $t('common.cancel') }}</el-button>
-                <el-button size="small" @click="handleToggleSelectAll">
-                  {{ isAllSelected ? $t('addressBookManagement.deselectAll') : $t('addressBookManagement.selectAll') }}
-                </el-button>
-                <el-button type="primary" size="small" @click="handleSavePermissions">{{ $t('addressBookManagement.save') }}</el-button>
+                <CustomButton size="small" @click="handleCancel">{{ $t('common.cancel') }}</CustomButton>
+                <CustomButton size="small" @click="handleToggleSelectAll">{{ isAllSelected ? $t('addressBookManagement.deselectAll') : $t('addressBookManagement.selectAll') }}</CustomButton>
+                <CustomButton type="confirm" size="small" @click="handleSavePermissions">{{ $t('addressBookManagement.save') }}</CustomButton>
               </div>
             </div>
 
@@ -166,10 +172,14 @@
                       @keyup.enter="handleEditPermissionBlur(device)"
                       autofocus
                     />
-                    <span v-else class="permission-name" @click.stop="handleStartEditPermission(device)">{{ device.addressBookAlias || device.name }}</span>
+                    <span v-else class="permission-name" @click.stop="handleStartEditPermission(device)">
+                      <MacAddressMask :macAddress="device.addressBookAlias || device.name" />
+                    </span>
                     <i v-if="editingDeviceId !== device.id" class="el-icon-edit permission-edit-btn" @click.stop="handleStartEditPermission(device)"></i>
                   </div>
-                  <div class="permission-id">{{ device.deviceId }}</div>
+                  <div class="permission-id">
+                    <MacAddressMask :macAddress="device.deviceId" />
+                  </div>
                   <div class="permission-status" :class="device.online ? 'online' : 'offline'">
                     {{ device.online ? $t('addressBookManagement.online') : $t('addressBookManagement.offline') }}
                   </div>
@@ -195,10 +205,12 @@ import HeaderBar from "@/components/HeaderBar.vue";
 import VersionFooter from "@/components/VersionFooter.vue";
 import Api from "@/apis/api.js";
 import AddressBookApi from "@/apis/module/addressBook.js";
+import MacAddressMask from "@/components/MacAddressMask.vue";
+import CustomButton from "@/components/CustomButton.vue";
 
 export default {
   name: "AddressBookManagement",
-  components: { HeaderBar, VersionFooter },
+  components: { HeaderBar, VersionFooter, MacAddressMask, CustomButton },
   data() {
     return {
       searchKeyword: "",
@@ -269,7 +281,7 @@ export default {
                   remarks: device.alias || '',
                   online: false,
                   createDate: device.createDate,
-                  lastConnectedAt: device.lastConnectedAt,
+                  lastConnectedAt: device.lastConnectedAtTimestamp,
                   deviceStatus: 'offline'
                 }));
                 resolve();
@@ -277,8 +289,11 @@ export default {
             });
           });
           Promise.all(agentPromises).then(() => {
+            const firstDevice = agentList[0] || {};
             this.agentDeviceOptions = agentList;
             this.filteredAgents = agentList;
+            // 默认选中第一项
+            this.handleDeviceClick(firstDevice.devices?.[0] || {}, firstDevice);
             // 获取设备状态
             this.fetchDeviceStatus();
           });
@@ -334,17 +349,6 @@ export default {
         }
       });
     },
-    handleAgentClick(agent) {
-      if (this.expandedAgentId === agent.id) {
-        this.expandedAgentId = null;
-        this.selectedAgent = null;
-        this.selectedDevice = null;
-      } else {
-        this.expandedAgentId = agent.id;
-        this.selectedAgent = agent;
-        this.selectedDevice = null;
-      }
-    },
     handleDeviceClick(device, agent) {
       this.expandedAgentId = agent.id;
       this.selectedAgent = agent;
@@ -396,8 +400,8 @@ export default {
           alias: newName
         }, (res) => {
           if (res.data?.code === 0) {
-            device.addressBookAlias = newName;
             this.$message.success(this.$t('addressBookManagement.aliasSaved'));
+            this.loadAddressBookPermissions(this.selectedDevice.deviceId);
           } else {
             this.$message.error(res.data?.msg || this.$t('addressBookManagement.saveFailed'));
           }
@@ -453,6 +457,7 @@ export default {
         } else if (results.every(r => r)) {
           this.$message.success(this.$t('addressBookManagement.permissionSaved'));
           this.originalPermissions = [...this.selectedPermissions];
+          this.loadAddressBookPermissions(this.selectedDevice.deviceId);
         } else {
           this.$message.error(this.$t('addressBookManagement.partialSaveFailed'));
         }
@@ -523,7 +528,7 @@ export default {
     getTimeAgo(timestamp) {
       if (!timestamp) return '-';
       const now = new Date();
-      const date = new Date(timestamp);
+      const date = new Date(Number(timestamp));
       const diff = now - date;
 
       const seconds = Math.floor(diff / 1000);
@@ -940,8 +945,8 @@ export default {
     }
 
     .section-actions {
+      margin-top: 4px;
       display: flex;
-      gap: 8px;
     }
   }
 }
@@ -1122,14 +1127,6 @@ export default {
 
 .search-input {
   flex: 1;
-}
-
-.btn-search {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #6b8cff, #a966ff);
-  border: none;
-  color: white;
-  width: 80px;
 }
 
 .agent-card {

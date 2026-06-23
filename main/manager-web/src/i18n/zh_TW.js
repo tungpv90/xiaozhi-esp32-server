@@ -352,6 +352,8 @@ export default {
 
   // 替換詞管理頁面相關
   'replacementWordManagement.pageTitle': '替換詞管理',
+  'replacementWordManagement.searchPlaceholder': '請輸入檔案名稱查詢',
+  'replacementWordManagement.search': '搜尋',
   'replacementWordManagement.fileName': '檔案名稱',
   'replacementWordManagement.replacementWordCount': '替換詞數量',
   'replacementWordManagement.replacementWordContent': '替換詞內容',
@@ -591,6 +593,7 @@ export default {
 
   // 字典管理頁面文本
   'dictManagement.pageTitle': '字典管理',
+  'dictManagement.dictTypeCategory': '字典分類',
   'dictManagement.searchPlaceholder': '請輸入字典值標籤查詢',
   'dictManagement.search': '搜索',
   'dictManagement.dictTypeName': '字典類型名稱',
@@ -645,6 +648,8 @@ export default {
   'user.disable': '禁用',
   'user.delete': '刪除',
   'user.selectUsersFirst': '請先選擇需要刪除的用戶',
+  'user.selectUsersToDisable': '請選擇要禁用的用戶',
+  'user.selectUsersToEnable': '請選擇要啟用的用戶',
   'user.confirmDeleteSelected': '確定要刪除選中的{count}個用戶嗎？',
   'user.deleting': '正在刪除中...',
   'user.deleteSuccess': '成功刪除{count}個用戶',
@@ -704,6 +709,9 @@ export default {
   'common.cancel': '取消',
   'common.sensitive': '敏感',
   'common.loading': '載入中',
+  'common.copySuccess': '複製成功',
+  'common.copyFailed': '複製失敗',
+  'common.copyAddress': '複製地址',
 
   // 語言切換
   'language.zhCN': '中文简体',
@@ -1150,6 +1158,8 @@ export default {
   'templateQuickConfig.cancel': '取消',
   'templateQuickConfig.templateNotFound': '未找到指定模板',
   'templateQuickConfig.newTemplate': '新模板',
+  'templateQuickConfig.editTemplate': '編輯模板',
+  'templateQuickConfig.addTemplate': '新增模板',
   'warning': '警告',
   'info': '提示',
   'common.networkError': '網路請求失敗',
@@ -1351,6 +1361,7 @@ export default {
   'knowledgeFileUpload.confirmParse': '確定要解析該文檔嗎？',
   'knowledgeFileUpload.nameRequired': '請輸入文檔名稱',
   'knowledgeFileUpload.fileRequired': '請選擇要上傳的文件',
+  'knowledgeFileUpload.fileSizeExceeded': '文件大小不能超過10MB!',
   'knowledgeFileUpload.getListFailed': '獲取文檔列表失敗',
   'knowledgeFileUpload.parseCancelled': '已取消解析',
   'knowledgeFileUpload.deleteCancelled': '已取消删除',
@@ -1384,7 +1395,19 @@ export default {
   'knowledgeFileUpload.comprehensiveSimilarity': '綜合相似度',
   'knowledgeFileUpload.content': '內容:',
   'knowledgeFileUpload.testQuestionRequired': '請輸入測試問題',
+  'knowledgeFileUpload.sourceDocument': '來源文檔',
+  'knowledgeFileUpload.parsing': '正在解析中...',
   'knowledgeBaseDialog.descriptionRequired': '請輸入知识库描述',
+
+  // 知識庫管理頁面文本
+  'knowledgeBaseManagement.loading': '加載中...',
+  'knowledgeBaseManagement.noData': '暫無數據',
+  'knowledgeBaseManagement.switchKnowledgeBase': '切換知識庫',
+  'knowledgeBaseManagement.currentKnowledgeBaseDocuments': '當前知識庫文檔資產',
+  'knowledgeBaseManagement.enabled': '已啟用',
+  'knowledgeBaseManagement.disabled': '已禁用',
+  'knowledgeBaseManagement.totalDocuments': '共 {total} 個文檔',
+  'knowledgeBaseManagement.getListFailed': '獲取列表失敗',
 
   // 功能管理頁面文本
   'featureManagement.selectAll': '全選',
@@ -1401,6 +1424,12 @@ export default {
   'featureManagement.cancel': '取消',
   'featureManagement.resetSuccess': '功能配置重置成功',
   'featureManagement.noChanges': '沒有需要儲存的更改',
+  'featureManagement.saving': '儲存中...',
+  'featureManagement.groupName.featureManagement': '功能模組開關',
+  'featureManagement.groupName.voiceManagement': '智能體可見配置',
+  'featureManagement.groupDescription.featureManagement': '控制系統核心功能模組的啟用狀態',
+  'featureManagement.groupDescription.voiceManagement': '配置哪些功能對智能體（AI助手）可見和可用',
+  'featureManagement.moduleCount': '共 {count} 個模組',
 
   // 功能名稱和描述
   'feature.voiceprintRecognition.name': '聲紋識別',
@@ -1421,7 +1450,6 @@ export default {
   // 通訊錄管理頁面
   'addressBookManagement.title': '通訊錄',
   'addressBookManagement.searchPlaceholder': '請輸入通訊錄名稱搜尋',
-  'addressBookManagement.search': '搜尋',
   'addressBookManagement.name': '通訊錄名稱',
   'addressBookManagement.description': '通訊錄描述',
   'addressBookManagement.contactCount': '聯繫人數量',

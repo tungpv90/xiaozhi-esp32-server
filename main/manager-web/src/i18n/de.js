@@ -352,6 +352,8 @@ export default {
 
   // Replacement word management page related
   'replacementWordManagement.pageTitle': 'Ersetzungswortverwaltung',
+  'replacementWordManagement.searchPlaceholder': 'Bitte geben Sie den Dateinamen zur Suche ein',
+  'replacementWordManagement.search': 'Suchen',
   'replacementWordManagement.fileName': 'Dateiname',
   'replacementWordManagement.replacementWordCount': 'Anzahl der Ersetzungswörter',
   'replacementWordManagement.replacementWordContent': 'Ersetzungswortinhalt',
@@ -591,6 +593,7 @@ export default {
 
   // Dictionary management page text
   'dictManagement.pageTitle': 'Wörterbuchverwaltung',
+  'dictManagement.dictTypeCategory': 'Wörterbuchkategorie',
   'dictManagement.searchPlaceholder': 'Bitte Wörterbuchwert-Label zur Suche eingeben',
   'dictManagement.search': 'Suchen',
   'dictManagement.dictTypeName': 'WDT-Name',
@@ -645,6 +648,8 @@ export default {
   'user.disable': 'Deaktivieren',
   'user.delete': 'Löschen',
   'user.selectUsersFirst': 'Bitte wählen Sie zuerst Benutzer zum Löschen aus',
+  'user.selectUsersToDisable': 'Bitte wählen Sie Benutzer zum Deaktivieren aus',
+  'user.selectUsersToEnable': 'Bitte wählen Sie Benutzer zum Aktivieren aus',
   'user.confirmDeleteSelected': 'Sind Sie sicher, dass Sie {count} ausgewählte Benutzer löschen möchten?',
   'user.deleting': 'Löscht...',
   'user.deleteSuccess': 'Erfolgreich {count} Benutzer gelöscht',
@@ -704,6 +709,9 @@ export default {
   'common.cancel': 'Abbrechen',
   'common.sensitive': 'Sensibel',
   'common.loading': 'Lädt',
+  'common.copySuccess': 'Erfolgreich kopiert',
+  'common.copyFailed': 'Kopieren fehlgeschlagen',
+  'common.copyAddress': 'Adresse kopieren',
 
   // Language switch
   'language.zhCN': '中文简体',
@@ -1116,6 +1124,8 @@ export default {
   'agentTemplateManagement.action': 'Aktion',
   'agentTemplateManagement.createTemplate': 'Vorlage erstellen',
   'templateQuickConfig.newTemplate': 'Neue Vorlage',
+  'templateQuickConfig.editTemplate': 'Vorlage bearbeiten',
+  'templateQuickConfig.addTemplate': 'Vorlage hinzufügen',
   'agentTemplateManagement.editTemplate': 'Vorlage bearbeiten',
   'agentTemplateManagement.deleteTemplate': 'Vorlage löschen',
   'agentTemplateManagement.deleteSuccess': 'Vorlage erfolgreich gelöscht',
@@ -1351,6 +1361,7 @@ export default {
   'knowledgeFileUpload.confirmParse': 'Sind Sie sicher, dass Sie dieses Dokument parsen möchten?',
   'knowledgeFileUpload.nameRequired': 'Bitte Dokumentnamen eingeben',
   'knowledgeFileUpload.fileRequired': 'Bitte wählen Sie eine Datei zum Hochladen aus',
+  'knowledgeFileUpload.fileSizeExceeded': 'Dateigröße darf 10MB nicht überschreiten!',
   'knowledgeFileUpload.getListFailed': 'Dokumentenliste konnte nicht abgerufen werden',
   'knowledgeFileUpload.parseCancelled': 'Parsen abgebrochen',
   'knowledgeFileUpload.deleteCancelled': 'Löschen abgebrochen',
@@ -1384,7 +1395,19 @@ export default {
   'knowledgeFileUpload.comprehensiveSimilarity': 'Umfassende Ähnlichkeit',
   'knowledgeFileUpload.content': 'Inhalt:',
   'knowledgeFileUpload.testQuestionRequired': 'Bitte Testfrage eingeben',
+  'knowledgeFileUpload.sourceDocument': 'Quelldokument',
+  'knowledgeFileUpload.parsing': 'Analysiere...',
   'knowledgeBaseDialog.descriptionRequired': 'Bitte Wissensbasis-Beschreibung eingeben',
+
+  // Knowledge Base Management page text
+  'knowledgeBaseManagement.loading': 'Laden...',
+  'knowledgeBaseManagement.noData': 'Keine Daten',
+  'knowledgeBaseManagement.switchKnowledgeBase': 'Wissensbasis wechseln',
+  'knowledgeBaseManagement.currentKnowledgeBaseDocuments': 'Aktuelle Wissensbasis-Dokumentassets',
+  'knowledgeBaseManagement.enabled': 'Aktiviert',
+  'knowledgeBaseManagement.disabled': 'Deaktiviert',
+  'knowledgeBaseManagement.totalDocuments': 'Gesamt {total} Dokumente',
+  'knowledgeBaseManagement.getListFailed': 'Liste konnte nicht abgerufen werden',
 
   // Feature Management page text
   'featureManagement.selectAll': 'Alle auswählen',
@@ -1401,6 +1424,12 @@ export default {
   'featureManagement.cancel': 'Abbrechen',
   'featureManagement.resetSuccess': 'Funktionskonfiguration erfolgreich zurückgesetzt',
   'featureManagement.noChanges': 'Keine Änderungen zum Speichern',
+  'featureManagement.saving': 'Speichern...',
+  'featureManagement.groupName.featureManagement': 'Funktionsmodul-Schalter',
+  'featureManagement.groupName.voiceManagement': 'Agent-Sichtbarkeitskonfiguration',
+  'featureManagement.groupDescription.featureManagement': 'Aktivierungsstatus der Kernfunktionsmodule steuern',
+  'featureManagement.groupDescription.voiceManagement': 'Konfigurieren, welche Funktionen für Agenten (KI-Assistenten) sichtbar und verfügbar sind',
+  'featureManagement.moduleCount': '{count} Module insgesamt',
 
   // Feature names and descriptions
   'feature.voiceprintRecognition.name': 'Stimmerkennung',
@@ -1421,7 +1450,6 @@ export default {
   // Adressbuch Verwaltungsseite
   'addressBookManagement.title': 'Adressbuchverwaltung',
   'addressBookManagement.searchPlaceholder': 'Gerätename oder MAC-Adresse suchen',
-  'addressBookManagement.search': 'Suchen',
   'addressBookManagement.selectAgent': 'Bitte Agent auswählen',
   'addressBookManagement.name': 'Adressbuchname',
   'addressBookManagement.description': 'Adressbuchbeschreibung',

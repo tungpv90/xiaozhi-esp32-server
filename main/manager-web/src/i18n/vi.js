@@ -352,6 +352,8 @@ export default {
 
   // Replacement word management page related
   'replacementWordManagement.pageTitle': 'Quản lý từ thay thế',
+  'replacementWordManagement.searchPlaceholder': 'Vui lòng nhập tên tệp để tìm kiếm',
+  'replacementWordManagement.search': 'Tìm kiếm',
   'replacementWordManagement.fileName': 'Tên tệp',
   'replacementWordManagement.replacementWordCount': 'Số lượng từ thay thế',
   'replacementWordManagement.replacementWordContent': 'Nội dung từ thay thế',
@@ -591,6 +593,7 @@ export default {
 
   // Dictionary management page text
   'dictManagement.pageTitle': 'Quản lý từ điển',
+  'dictManagement.dictTypeCategory': 'Danh mục từ điển',
   'dictManagement.searchPlaceholder': 'Vui lòng nhập nhãn giá trị từ điển để tìm kiếm',
   'dictManagement.search': 'Tìm kiếm',
   'dictManagement.dictTypeName': 'Tên loại từ điển',
@@ -645,6 +648,8 @@ export default {
   'user.disable': 'Vô hiệu hóa',
   'user.delete': 'Xóa',
   'user.selectUsersFirst': 'Vui lòng chọn người dùng để xóa trước',
+  'user.selectUsersToDisable': 'Vui lòng chọn người dùng để vô hiệu hóa',
+  'user.selectUsersToEnable': 'Vui lòng chọn người dùng để kích hoạt',
   'user.confirmDeleteSelected': 'Bạn có chắc chắn muốn xóa {count} người dùng đã chọn?',
   'user.deleting': 'Đang xóa...',
   'user.deleteSuccess': 'Đã xóa thành công {count} người dùng',
@@ -704,6 +709,9 @@ export default {
   'common.cancel': 'Hủy bỏ',
   'common.sensitive': 'Nhạy cảm',
   'common.loading': 'Đang tải',
+  'common.copySuccess': 'Sao chép thành công',
+  'common.copyFailed': 'Sao chép thất bại',
+  'common.copyAddress': 'Sao chép địa chỉ',
 
   // Language switch
   'language.zhCN': '中文简体',
@@ -1116,6 +1124,8 @@ export default {
   'agentTemplateManagement.action': 'Hành động',
   'agentTemplateManagement.createTemplate': 'Tạo mẫu',
   'templateQuickConfig.newTemplate': 'Mẫu mới',
+  'templateQuickConfig.editTemplate': 'Chỉnh sửa mẫu',
+  'templateQuickConfig.addTemplate': 'Thêm mẫu',
   'agentTemplateManagement.editTemplate': 'Chỉnh sửa mẫu',
   'agentTemplateManagement.deleteTemplate': 'Xóa mẫu',
   'agentTemplateManagement.deleteSuccess': 'Đã xóa mẫu thành công',
@@ -1351,6 +1361,7 @@ export default {
   'knowledgeFileUpload.confirmParse': 'Bạn có chắc chắn muốn phân tích cú pháp tài liệu này?',
   'knowledgeFileUpload.nameRequired': 'Vui lòng nhập tên tài liệu',
   'knowledgeFileUpload.fileRequired': 'Vui lòng chọn tệp để tải lên',
+  'knowledgeFileUpload.fileSizeExceeded': 'Kích thước tệp không được vượt quá 10MB!',
   'knowledgeFileUpload.getListFailed': 'Không thể lấy danh sách tài liệu',
   'knowledgeFileUpload.parseCancelled': 'Đã hủy phân tích cú pháp',
   'knowledgeFileUpload.deleteCancelled': 'Đã hủy xóa',
@@ -1384,7 +1395,19 @@ export default {
   'knowledgeFileUpload.comprehensiveSimilarity': 'Độ tương đồng toàn diện',
   'knowledgeFileUpload.content': 'Nội dung:',
   'knowledgeFileUpload.testQuestionRequired': 'Vui lòng nhập câu hỏi kiểm tra',
+  'knowledgeFileUpload.sourceDocument': 'Tài liệu nguồn',
+  'knowledgeFileUpload.parsing': 'Đang phân tích...',
   'knowledgeBaseDialog.descriptionRequired': 'Vui lòng nhập mô tả cơ sở kiến thức',
+
+  // Knowledge Base Management page text
+  'knowledgeBaseManagement.loading': 'Đang tải...',
+  'knowledgeBaseManagement.noData': 'Không có dữ liệu',
+  'knowledgeBaseManagement.switchKnowledgeBase': 'Chuyển đổi cơ sở kiến thức',
+  'knowledgeBaseManagement.currentKnowledgeBaseDocuments': 'Tài sản tài liệu cơ sở kiến thức hiện tại',
+  'knowledgeBaseManagement.enabled': 'Đã bật',
+  'knowledgeBaseManagement.disabled': 'Đã tắt',
+  'knowledgeBaseManagement.totalDocuments': 'Tổng {total} tài liệu',
+  'knowledgeBaseManagement.getListFailed': 'Lấy danh sách thất bại',
 
   // Feature Management page text
   'featureManagement.selectAll': 'Chọn tất cả',
@@ -1401,6 +1424,12 @@ export default {
   'featureManagement.cancel': 'Hủy bỏ',
   'featureManagement.resetSuccess': 'Cấu hình tính năng đã được đặt lại thành công',
   'featureManagement.noChanges': 'Không có thay đổi nào để lưu',
+  'featureManagement.saving': 'Đang lưu...',
+  'featureManagement.groupName.featureManagement': 'Công tắc mô-đun tính năng',
+  'featureManagement.groupName.voiceManagement': 'Cấu hình hiển thị Agent',
+  'featureManagement.groupDescription.featureManagement': 'Kiểm soát trạng thái kích hoạt của các mô-đun tính năng cốt lõi',
+  'featureManagement.groupDescription.voiceManagement': 'Cấu hình các tính năng hiển thị và khả dụng cho agent (trợ lý AI)',
+  'featureManagement.moduleCount': 'Tổng cộng {count} mô-đun',
 
   // Feature names and descriptions
   'feature.voiceprintRecognition.name': 'Nhận dạng giọng nói',
@@ -1421,7 +1450,6 @@ export default {
   // Trang quản lý danh bạ
   'addressBookManagement.title': 'Quản lý danh bạ',
   'addressBookManagement.searchPlaceholder': 'Tìm kiếm tên thiết bị hoặc địa chỉ MAC',
-  'addressBookManagement.search': 'Tìm kiếm',
   'addressBookManagement.selectAgent': 'Vui lòng chọn tác tử',
   'addressBookManagement.name': 'Tên danh bạ',
   'addressBookManagement.description': 'Mô tả danh bạ',

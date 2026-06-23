@@ -352,6 +352,8 @@ export default {
 
   // Replacement word management page related
   'replacementWordManagement.pageTitle': 'Replacement Word Management',
+  'replacementWordManagement.searchPlaceholder': 'Please enter file name to search',
+  'replacementWordManagement.search': 'Search',
   'replacementWordManagement.fileName': 'File Name',
   'replacementWordManagement.replacementWordCount': 'Replacement Word Count',
   'replacementWordManagement.replacementWordContent': 'Replacement Word Content',
@@ -591,6 +593,7 @@ export default {
 
   // Dictionary management page text
   'dictManagement.pageTitle': 'Dictionary Management',
+  'dictManagement.dictTypeCategory': 'Dict Category',
   'dictManagement.searchPlaceholder': 'Please enter dict value label to search',
   'dictManagement.search': 'Search',
   'dictManagement.dictTypeName': 'Dict Type Name',
@@ -645,6 +648,8 @@ export default {
   'user.disable': 'Disable',
   'user.delete': 'Delete',
   'user.selectUsersFirst': 'Please select users to delete first',
+  'user.selectUsersToDisable': 'Please select users to disable',
+  'user.selectUsersToEnable': 'Please select users to enable',
   'user.confirmDeleteSelected': 'Are you sure you want to delete {count} selected users?',
   'user.deleting': 'Deleting...',
   'user.deleteSuccess': 'Successfully deleted {count} users',
@@ -704,6 +709,9 @@ export default {
   'common.cancel': 'Cancel',
   'common.sensitive': 'Sensitive',
   'common.loading': 'Loading',
+  'common.copySuccess': 'Copy successful',
+  'common.copyFailed': 'Copy failed',
+  'common.copyAddress': 'Copy address',
 
   // Language switch
   'language.zhCN': '中文简体',
@@ -1150,6 +1158,8 @@ export default {
   'templateQuickConfig.cancel': 'Cancel',
   'templateQuickConfig.templateNotFound': 'Template not found',
   'templateQuickConfig.newTemplate': 'New Template',
+  'templateQuickConfig.editTemplate': 'Edit Template',
+  'templateQuickConfig.addTemplate': 'Add Template',
   'warning': 'Warning',
   'info': 'Info',
   'common.networkError': 'Network request failed',
@@ -1351,6 +1361,7 @@ export default {
   'knowledgeFileUpload.confirmParse': 'Are you sure you want to parse this document?',
   'knowledgeFileUpload.nameRequired': 'Please enter document name',
   'knowledgeFileUpload.fileRequired': 'Please select a file to upload',
+  'knowledgeFileUpload.fileSizeExceeded': 'File size cannot exceed 10MB!',
   'knowledgeFileUpload.getListFailed': 'Failed to get document list',
   'knowledgeFileUpload.parseCancelled': 'Parse cancelled',
   'knowledgeFileUpload.deleteCancelled': 'Delete cancelled',
@@ -1382,9 +1393,21 @@ export default {
   'knowledgeFileUpload.testResult': 'Test Result:',
   'knowledgeFileUpload.noRelatedSlices': 'No related slices found',
   'knowledgeFileUpload.comprehensiveSimilarity': 'Comprehensive Similarity',
+  'knowledgeFileUpload.sourceDocument': 'Source Document',
   'knowledgeFileUpload.content': 'Content:',
   'knowledgeFileUpload.testQuestionRequired': 'Please enter test question',
+  'knowledgeFileUpload.parsing': 'Parsing...',
   'knowledgeBaseDialog.descriptionRequired': 'Please enter knowledge base description',
+
+  // Knowledge Base Management page text
+  'knowledgeBaseManagement.loading': 'Loading...',
+  'knowledgeBaseManagement.noData': 'No data',
+  'knowledgeBaseManagement.switchKnowledgeBase': 'Switch Knowledge Base',
+  'knowledgeBaseManagement.currentKnowledgeBaseDocuments': 'Current Knowledge Base Document Assets',
+  'knowledgeBaseManagement.enabled': 'Enabled',
+  'knowledgeBaseManagement.disabled': 'Disabled',
+  'knowledgeBaseManagement.totalDocuments': 'Total {total} documents',
+  'knowledgeBaseManagement.getListFailed': 'Failed to get list',
 
   // Feature Management page text
   'featureManagement.selectAll': 'Select All',
@@ -1401,6 +1424,12 @@ export default {
   'featureManagement.cancel': 'Cancel',
   'featureManagement.resetSuccess': 'Feature configuration reset successfully',
   'featureManagement.noChanges': 'No changes to save',
+  'featureManagement.saving': 'Saving...',
+  'featureManagement.groupName.featureManagement': 'Feature Module Switch',
+  'featureManagement.groupName.voiceManagement': 'Agent Visible Configuration',
+  'featureManagement.groupDescription.featureManagement': 'Control the enable status of core feature modules',
+  'featureManagement.groupDescription.voiceManagement': 'Configure which features are visible and available to agents (AI assistants)',
+  'featureManagement.moduleCount': '{count} modules in total',
 
   // Feature names and descriptions
   'feature.voiceprintRecognition.name': 'Voiceprint Recognition',
@@ -1421,7 +1450,6 @@ export default {
   // Address Book Management page
   'addressBookManagement.title': 'Address Book Management',
   'addressBookManagement.searchPlaceholder': 'Search device name or MAC address',
-  'addressBookManagement.search': 'Search',
   'addressBookManagement.selectAgent': 'Please select agent',
   'addressBookManagement.name': 'Address Book Name',
   'addressBookManagement.description': 'Address Book Description',

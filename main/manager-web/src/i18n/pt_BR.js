@@ -352,6 +352,8 @@ export default {
 
   // Replacement word management page related
   'replacementWordManagement.pageTitle': 'Gerenciamento de Palavras de Substituição',
+  'replacementWordManagement.searchPlaceholder': 'Digite o nome do arquivo para pesquisar',
+  'replacementWordManagement.search': 'Pesquisar',
   'replacementWordManagement.fileName': 'Nome do Arquivo',
   'replacementWordManagement.replacementWordCount': 'Quantidade de Palavras de Substituição',
   'replacementWordManagement.replacementWordContent': 'Conteúdo Substituto',
@@ -591,6 +593,7 @@ export default {
 
   // Página de gerenciamento de dicionário
   'dictManagement.pageTitle': 'Gerenciamento de Dicionário',
+  'dictManagement.dictTypeCategory': 'Categoria do Dicionário',
   'dictManagement.searchPlaceholder': 'Por favor, insira o rótulo do dicionário para pesquisar',
   'dictManagement.search': 'Pesquisar',
   'dictManagement.dictTypeName': 'Nome do Tipo de Dicionário',
@@ -645,6 +648,8 @@ export default {
   'user.disable': 'Desativar',
   'user.delete': 'Excluir',
   'user.selectUsersFirst': 'Por favor, selecione usuários para excluir primeiro',
+  'user.selectUsersToDisable': 'Por favor, selecione usuários para desativar',
+  'user.selectUsersToEnable': 'Por favor, selecione usuários para ativar',
   'user.confirmDeleteSelected': 'Tem certeza de que deseja excluir {count} usuários selecionados?',
   'user.deleting': 'Excluindo...',
   'user.deleteSuccess': '{count} usuários excluídos com sucesso',
@@ -704,6 +709,9 @@ export default {
   'common.cancel': 'Cancelar',
   'common.sensitive': 'Sensível',
   'common.loading': 'Carregando',
+  'common.copySuccess': 'Cópia bem-sucedida',
+  'common.copyFailed': 'Falha ao copiar',
+  'common.copyAddress': 'Copiar endereço',
 
   // Troca de idioma
   'language.zhCN': '中文简体',
@@ -1150,6 +1158,8 @@ export default {
   'templateQuickConfig.cancel': 'Cancelar',
   'templateQuickConfig.templateNotFound': 'Modelo não encontrado',
   'templateQuickConfig.newTemplate': 'Novo Modelo',
+  'templateQuickConfig.editTemplate': 'Editar Modelo',
+  'templateQuickConfig.addTemplate': 'Adicionar Modelo',
   'warning': 'Aviso',
   'info': 'Informação',
   'common.networkError': 'Falha na requisição de rede',
@@ -1351,6 +1361,7 @@ export default {
   'knowledgeFileUpload.confirmParse': 'Tem certeza de que deseja analisar este documento?',
   'knowledgeFileUpload.nameRequired': 'Por favor, insira o nome do documento',
   'knowledgeFileUpload.fileRequired': 'Por favor, selecione um arquivo para enviar',
+  'knowledgeFileUpload.fileSizeExceeded': 'O tamanho do arquivo não pode exceder 10MB!',
   'knowledgeFileUpload.getListFailed': 'Falha ao obter lista de documentos',
   'knowledgeFileUpload.parseCancelled': 'Análise cancelada',
   'knowledgeFileUpload.deleteCancelled': 'Exclusão cancelada',
@@ -1384,7 +1395,19 @@ export default {
   'knowledgeFileUpload.comprehensiveSimilarity': 'Similaridade Geral',
   'knowledgeFileUpload.content': 'Conteúdo:',
   'knowledgeFileUpload.testQuestionRequired': 'Por favor, insira a pergunta de teste',
+  'knowledgeFileUpload.sourceDocument': 'Documento de origem',
+  'knowledgeFileUpload.parsing': 'Analisando...',
   'knowledgeBaseDialog.descriptionRequired': 'Por favor, insira a descrição da base de conhecimento',
+
+  // Página de gerenciamento de base de conhecimento
+  'knowledgeBaseManagement.loading': 'Carregando...',
+  'knowledgeBaseManagement.noData': 'Sem dados',
+  'knowledgeBaseManagement.switchKnowledgeBase': 'Alternar Base de Conhecimento',
+  'knowledgeBaseManagement.currentKnowledgeBaseDocuments': 'Ativos de Documentos da Base de Conhecimento Atual',
+  'knowledgeBaseManagement.enabled': 'Ativado',
+  'knowledgeBaseManagement.disabled': 'Desativado',
+  'knowledgeBaseManagement.totalDocuments': 'Total de {total} documentos',
+  'knowledgeBaseManagement.getListFailed': 'Falha ao obter lista',
 
   // Página de gerenciamento de funcionalidades
   'featureManagement.selectAll': 'Selecionar Tudo',
@@ -1401,6 +1424,12 @@ export default {
   'featureManagement.cancel': 'Cancelar',
   'featureManagement.resetSuccess': 'Configuração de funcionalidades redefinida com sucesso',
   'featureManagement.noChanges': 'Nenhuma alteração para salvar',
+  'featureManagement.saving': 'Salvando...',
+  'featureManagement.groupName.featureManagement': 'Interruptor de Módulo de Funcionalidade',
+  'featureManagement.groupName.voiceManagement': 'Configuração de Visibilidade do Agente',
+  'featureManagement.groupDescription.featureManagement': 'Controlar o status de ativação dos módulos de funcionalidade principal',
+  'featureManagement.groupDescription.voiceManagement': 'Configurar quais funcionalidades são visíveis e disponíveis para agentes (assistentes de IA)',
+  'featureManagement.moduleCount': '{count} módulos no total',
 
   // Nomes e descrições de funcionalidades
   'feature.voiceprintRecognition.name': 'Reconhecimento de Impressão Vocal',
@@ -1421,7 +1450,6 @@ export default {
   // Página de Gerenciamento de Lista de Contatos
   'addressBookManagement.title': 'Gerenciamento de Lista de Contatos',
   'addressBookManagement.searchPlaceholder': 'Pesquisar nome do dispositivo ou endereço MAC',
-  'addressBookManagement.search': 'Pesquisar',
   'addressBookManagement.selectAgent': 'Selecione um agente',
   'addressBookManagement.name': 'Nome da Lista de Contatos',
   'addressBookManagement.description': 'Descrição da Lista de Contatos',
